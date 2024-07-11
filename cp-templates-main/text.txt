@@ -1,0 +1,262 @@
+#Topic_Required : 
+Copac Draws trees, Queen, - Trees
+Ball in Berland - Graph
+Zero Remainder Array - Number Theory 
+
+____________________________________________________________________________________
+#Articles :
+
+Time complexity - https://www.geeksforgeeks.org/knowing-the-complexity-in-competitive-programming/
+Editorials : https://codeforces.com/favourite/comments     (nor) 
+____________________________________________________________________________________
+
+#Idea(Parity) : Fortune Telling - if x can reach y or x + 3...using some combination of operations which have same effect on *PARITY* as the *PARITY* of x and x+3 will also be different.
+#Idea(Bitmask) : Jhonny and another Rating drop - finding answer for each bit was the way!!!
+
+____________________________________________________________________________________
+Graph :
+
+We are aware of linear data structures such as arrays, stacks, queues, and linked lists.
+
+The only non-linear data structure that we’ve seen so far is Tree. In fact, a tree is a special type of graph with some restrictions. Graphs are data structures that have a wide-ranging application in real life. These include analysis of electrical circuits, finding the shortest routes between two places, building navigation systems like Google Maps, even social media using graphs to store data about each user, etc. To understand and use the graph data structure, let’s get familiar with the definitions and terms associated with graphs. 
+
+#Terminology :- 
+
+Undirected : travel both ways 
+Directed  : travel in specified direction 
+Edge : It connects two nodes.
+Cyclic and Acyclic : Graphs are not necessarilly Cyclic.
+DAG : Directed Acyclic Graph
+Path : 1 2 3 5 is a path.
+       1 2 3 2 1 is not a path, because a node can’t appear twice in a path.   
+       1 3 5 is not a path, as adjacent nodes must have an edge and there is no edge between 1 and 3.
+Degree : No. of edges that go inside or outside a node.
+         Property: It states that the total degree of a graph is equal to twice the number of edges. This is because every edge is associated/ connected to two nodes.
+         For directed graphs, we’ve Indegree and Outdegree. The indegree of a node is the number of incoming edges. The outdegree of a node is the number of outgoing edges.
+Edge weight : A graph may have weights assigned on its edges. It is often referred to as the cost of the edge. If weights are not assigned then we assume the unit weight, i.e, 1. In applications, weight may be a measure of the cost of a route. For example, if vertices A and B represent towns in a road network, then weight on edge AB may represent the cost of moving from A to B, or vice versa.
+
+#Graph Representation :
+
+Input Format : 
+In the question, they will mention whether it is a directed or undirected graph. The first line contains two space-separated integers n and m denoting the number of nodes and the number of edges respectively. Next m lines contain two integers u and v representing an edge between u and v. In the case of an undirected graph if there is an edge between u and v, it means there is an edge between v and u as well. Now the question arises if there is any boundation on the number of edges, i.e., the value of m? The answer is NO. If we add more edges, then the value of m will increase. 
+
+Representation : 
+1) Adjacency matrix 
+2) Adjacency list 
+
+Adjacency Matrix : An adjacency matrix of a graph is a two-dimensional array of size n x n, where n is the number of nodes in the graph, with the property that a[ i ][ j ] = 1 if the edge (vᵢ, vⱼ) is in the set of edges, and a[ i ][ j ] = 0 if there is no such edge.
+
+We need to store these edges so that future algorithms can be performed. Are the nodes zero-based or one-based? In this case, the nodes follow one-based indexing as the last node is 5 and the total number of nodes is also 5. Now, define an adjacency matrix of size (n+1) x (n+1), i.e., adj[n+1][n+1]. If there is an edge between 1 and 2, mark 1 at (1,2) and (2,1) as there is an edge between 2 and 1 as well (in the case of an undirected graph). Similarly, follow for other edges.
+
+All the edges are marked in the adjacency matrix, remaining spaces in the matrix are marked as zero or left as it is.
+
+The space needed to represent a graph using its adjacency matrix is n² locations. Space complexity = (n*n), It is a costly method as n² locations are consumed.
+
+code : int main()
+        {
+            int n, m;
+            cin >> n >> m;
+            // adjacency matrix for undirected graph
+            // time complexity: O(n)
+            int adj[n+1][n+1];
+            for(int i = 0; i < m; i++)
+            {
+                int u, v;
+                cin >> u >> v;
+                adj[u][v] = 1;
+                adj[v][u] = 1  // this statement will be removed in case of directed graph
+            }
+            return 0;
+        }
+
+Adjacency list : In the previous storing method, we saw it was taking n² space to store the graph, this is where the adjacency list comes into the picture, it takes a very less amount of space.
+
+This is a node-based representation. In this representation, we associate with each node a list of nodes adjacent to it. Normally an array is used to store the nodes. The array provides random access to the adjacency list for any particular node.
+
+To create an adjacency list, we will create an array of size n+1 where n is the number of nodes. This array will contain a list, so in C++ list is nothing but the vector of integers.
+
+vector <int> adj[n+1];
+
+Hence, we stored all the neighbors in the particular indexes. In this representation, for an undirected graph, each edge data appears twice. For example, nodes 1 and 2 are adjacent hence node 2 appears in the list of node 1, and node 1 appears in the list of node 2. So, the space needed to represent an undirected graph using its adjacency list is 2 x E locations, where E denotes the number of edges.
+
+Space complexity = O(2xE)
+
+This representation is much better than the adjacency matrix, as matrix representation consumes n² locations, and most of them are unused.
+
+code: #include <iostream>
+
+        using namespace std;
+
+        int main()
+        {
+            int n, m;
+            cin >> n >> m;
+            // adjacency list for undirected graph
+            // time complexity: O(2E)
+            vector<int> adj[n+1];
+            for(int i = 0; i < m; i++)
+            {
+                int u, v;
+                cin >> u >> v;
+                adj[u].push_back(v);
+                adj[v].push_back(u);
+            }
+            return 0;
+        }
+
+For directed graphs, if there is an edge between u and v it means the edge only goes from u to v, i.e., v is the neighbor of u, but vice versa is not true. The space needed to represent a directed graph using its adjacency list is E locations, where E denotes the number of edges, as here each edge data appears only once.
+
+Space complexity = O(E)
+
+code: #include <iostream>
+
+        using namespace std;
+
+        int main()
+        {
+            int n, m;
+            cin >> n >> m;
+            // adjacency list for directed graph
+            // time complexity: O(E)
+            vector<int> adj[n+1];
+            for(int i = 0; i < m; i++)
+            {
+                int u, v;
+                // u —> v
+                cin >> u >> v;
+                adj[u].push_back(v);
+            }
+            return 0;
+        }
+
+Weighted Graph Representation:  It is much simpler in the case of adjacency matrix just update the matrix according to the weight. In the case of the list we can use vector<pair<int,int>> adj[n+1];
+
+#Connected Components: Given an undirected graph with 10 nodes and 8 edges. The edges are (1,2), (1,3), (2,4), (4,3), (5,6), (5,7), (6,7), (8,9). Apparently, it's a graph, which is in 4 pieces, the last one being a single node. In this case, we can say, the graph has been broken down into 4 different connected components. So next time if you see two different parts of a graph and they are not connected, then do not say that it cannot be a single graph. In the above example, they can be 4 different graphs but according to the given question and the input, we can call them parts of a single graph. 
+
+#Graph traversal: Any traversal algorithm will always use a visited array. 
+
+For the same example, we will create an array of size 11 (n+1) starting with the zeroth index. Initialize this visited array to zero, indicating that all the nodes are unvisited. Then follow the following algorithm. If a node is not visited, then call the traversal algorithm.
+
+for i:= 1 to 10
+    if(!visitied[i])
+        traversal(i);
+
+We cannot just call traversal(node) because a graph can have multiple components and traversal algorithms are designed in such a way that they will traverse the entire connected portion of the graph. For example, traversal(1) will traverse only the connected nodes, i.e., nodes 2, 3, and 4, but not the connected components.
+
+
+BFS: 
+
+Approach:
+
+Initial Configuration: Queue data structure: follows FIFO, and will always contain the starting.
+Visited array: an array initialized to 0
+In BFS, we start with a “starting” node, mark it as visited, and push it into the queue data structure.
+In every iteration, we pop out the node ‘v’ and put it in the solution vector, as we are traversing this node.
+All the unvisited adjacent nodes from ‘v’ are visited next and are pushed into the queue. The list of adjacent neighbors of the node can be accessed from the adjacency list.
+Repeat steps 2 and 3 until the queue becomes empty, and this way you can easily traverse all the nodes in the graph.
+
+code: class Solution 
+        {
+            public:
+            // Function to return Breadth First Traversal of given graph.
+            vector<int> bfsOfGraph(int V, vector<int> adj[]) {
+                int vis[V] = {0}; 
+                vis[0] = 1; 
+                queue<int> q;
+
+                // push the initial starting node 
+                q.push(0); 
+                vector<int> bfs; 
+
+                // iterate till the queue is empty 
+                while(!q.empty()) {
+
+                // get the topmost element in the queue 
+                    int node = q.front(); 
+                    q.pop(); 
+                    bfs.push_back(node); 
+
+                    // traverse for all its neighbours 
+                    for(auto it : adj[node]) {
+
+                        // if the neighbour has previously not been visited, 
+                        // store in Q and mark as visited 
+                        if(!vis[it]) {
+                            vis[it] = 1; 
+                            q.push(it); 
+                        }
+                    }
+                }
+                return bfs; 
+            }
+        };
+
+Time Complexity: O(N) + O(2E), Where N = Nodes, 2E is for total degrees as we traverse all adjacent nodes.
+
+Space Complexity: O(3N) ~ O(N), Space for queue data structure visited array and an adjacency list
+
+
+DFS: 
+
+Approach: DFS is a traversal technique which involves the idea of recursion and backtracking. DFS goes in-depth, i.e., traverses all nodes by going ahead, and when there are no further nodes to traverse in the current path, then it backtracks on the same path and traverses other unvisited nodes. 
+
+In DFS, we start with a node ‘v’, mark it as visited and store it in the solution vector. It is unexplored as its adjacent nodes are not visited.
+We run through all the adjacent nodes, and call the recursive dfs function to explore the node ‘v’ which has not been visited previously. This leads to the exploration of another node ‘u’ which is its adjacent node and is not visited. 
+The adjacency list stores the list of neighbours for any node. Pick the neighbour list of node ‘v’ and run a for loop on the list of neighbours (say nodes ‘u’ and ‘w’ are in the list). We go in-depth with each node. When node ‘u’ is explored completely then it backtracks and explores node ‘w’.
+This traversal terminates when all the nodes are completely explored. 
+In this way, all the nodes are traversed in a depthwise manner.
+
+code: class Solution {
+        private: 
+            void dfs(int node, vector<int> adj[], int vis[], vector<int> &ls) {
+                vis[node] = 1; 
+                ls.push_back(node); 
+
+                // traverse all its neighbours
+                for(auto it : adj[node]) {
+
+                    // if the neighbour is not visited
+                    if(!vis[it]) {
+                        dfs(it, adj, vis, ls); 
+                    }
+                }
+            }
+        public:
+            // Function to return a list containing the DFS traversal of the graph.
+            vector<int> dfsOfGraph(int V, vector<int> adj[]) {
+                int vis[V] = {0}; 
+                int start = 0;
+
+                // create a list to store dfs
+                vector<int> ls; 
+
+                // call dfs for starting node
+                dfs(start, adj, vis, ls); 
+                return ls; 
+            }
+        };
+
+Time Complexity: For an undirected graph, O(N) + O(2E), For a directed graph, O(N) + O(E), Because for every node we are calling the recursive function once, the time taken is O(N) and 2E is for total degrees as we traverse for all adjacent nodes.
+
+Space Complexity: O(3N) ~ O(N), Space for dfs stack space, visited array and an adjacency list.
+
+BiPartite Graph : A bipartite graph is a graph which can be coloured using 2 colours such that no adjacent nodes have the same colour. Any linear graph with no cycle is always a bipartite graph. With a cycle, any graph with an even cycle length can also be a bipartite graph. So, any graph with an odd cycle length can never be a bipartite graph.
+
+
+Floyd Warshall Algorithm (multi source shortest path) : 
+
+
+
+Problem and ideas : 
+
+1. Finding connected no. of connected components in a graph - can be done using either dfs or bfs...in one traversal one connected component is fully visited. 
+ 
+___________________________________________________________________________________
+
+Dyanmic programming : Theory - https://docs.google.com/presentation/d/1j7Lyfd3lxJhqwMAai72MqHab574HD7nFBL0fteWSVjo/edit#slide=id.g125aacc6a45_0_1474
+
+
+
+
+
+
